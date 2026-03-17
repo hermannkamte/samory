@@ -1,0 +1,7 @@
+{
+  "name": "com.hka.ytdlp",
+  "description": "Samory Native Host",
+  "path": "C:\\Users\\YOUR_USERNAME\\samory\\host\\yt_dlp_host.bat",
+  "type": "stdio",
+  "allowed_origins": ["chrome-extension://YOUR_EXTENSION_ID/"]
+}

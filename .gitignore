@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+dist/
+build/
+*.spec
+yt-dlp-config.json
+yt-dlp-history.json
+yt-dlp-queue.json
+.DS_Store
+Thumbs.db
+.vscode/

@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "Samory",
+  "version": "1.0.0",
+  "description": "Open Source Audio & Video Downloader — download from YouTube and 1000+ sites",
+  "permissions": ["nativeMessaging", "activeTab", "tabs"],
+  "host_permissions": ["<all_urls>"],
+  "background": { "service_worker": "background.js" },
+  "action": { "default_popup": "popup.html", "default_title": "Samory" }
+}

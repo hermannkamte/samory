@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{width:310px;font-family:'Bahnschrift','DIN','Segoe UI',Arial,sans-serif;background:#2a2420;color:#F5EFE6;font-size:13px}
+  .hdr{background:#9C7F67;padding:10px 14px;display:flex;align-items:center;gap:10px}
+  .logo{width:34px;height:34px;background:#F5EFE6;border-radius:5px;display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-size:22px;font-weight:700;color:#9C7F67;flex-shrink:0}
+  .hdr-title{font-size:15px;font-weight:600;color:#F5EFE6;letter-spacing:2px}
+  .hdr-sub{font-size:10px;color:#e0d5c8;margin-top:1px}
+  .tabs{display:flex;background:#332e28;border-bottom:1px solid #4a4238}
+  .tab{flex:1;padding:8px 2px;text-align:center;cursor:pointer;font-size:11px;color:#a09080;border-bottom:2px solid transparent}
+  .tab.active{color:#2a2420;background:#BDA18A;border-bottom:2px solid #9C7F67}
+  .panel{display:none}.panel.active{display:block}
+  .pad{padding:12px 14px}
+  .lbl{font-size:10px;color:#a09080;margin-bottom:4px}
+  input[type=text]{width:100%;padding:7px 9px;background:#3d3630;border:none;color:#F5EFE6;border-radius:4px;font-family:inherit;font-size:12px;margin-bottom:10px;outline:none}
+  input[type=text]:focus{outline:1px solid #9C7F67}
+  .btn{display:block;width:100%;padding:8px 12px;margin-bottom:4px;border:none;border-radius:4px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;color:#F5EFE6;text-align:left}
+  .b-mp3{background:#9C7F67}.b-mp4{background:#4a4238}.b-pl3{background:#6a5a4a}.b-pl4{background:#3d3630;border:1px solid #4a4238}
+  .btn:hover{opacity:.88}.btn:disabled{opacity:.4;cursor:default}
+  hr{border:none;border-top:1px solid #4a4238;margin:0 14px 8px}
+
+  /* Contrôles */
+  .ctrl{display:none;flex-direction:row;gap:4px;padding:0 14px 6px}
+  .ctrl.show{display:flex}
+  .cbtn{flex:1;padding:7px 4px;border:none;border-radius:4px;cursor:pointer;font-family:inherit;font-size:11px;font-weight:600;color:#F5EFE6}
+  .cbtn-pause{background:#7a6a50}.cbtn-resume{background:#6a5a4a}.cbtn-stop{background:#6a3a2a}
+  .cbtn:hover{opacity:.85}.cbtn:disabled{opacity:.35;cursor:default}
+
+  /* Progress */
+  #prog-wrap{display:none;padding:0 14px 4px}
+  #prog-bg{background:#4a4238;border-radius:3px;height:6px}
+  #prog-bar{background:#9C7F67;height:6px;width:0%;border-radius:3px;transition:width .4s}
+  #status{font-size:11px;color:#a09080;text-align:center;min-height:16px;padding:4px 14px 8px}
+  #status.ok{color:#8a7a58}#status.err{color:#c09070}
+
+  /* Queue */
+  .sec-hdr{display:flex;justify-content:space-between;align-items:center;padding:8px 14px 4px}
+  .sec-hdr span{font-size:10px;font-weight:600;color:#a09080}
+  .sec-hdr button{font-size:10px;background:none;border:none;color:#6a5a4a;cursor:pointer;font-family:inherit}
+  .sec-hdr button:hover{color:#9C7F67}
+  .scroll{max-height:180px;overflow-y:auto;padding:0 14px 10px}
+  .qrow{background:#332e28;border-radius:4px;padding:6px 8px;margin-bottom:4px}
+  .qrow-top{display:flex;align-items:center;gap:6px;margin-bottom:5px}
+  .qbadge{font-size:9px;font-weight:700;padding:2px 5px;border-radius:3px;flex-shrink:0;color:#F5EFE6}
+  .bm-audio{background:#9C7F67}.bm-video{background:#4a4238}.bm-playlist_audio{background:#6a5a4a}.bm-playlist_video{background:#3d3630;border:1px solid #4a4238}.bm-int{background:#7a5a3a}
+  .qtitle{font-size:11px;color:#c0b0a0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .qpbg{background:#4a4238;border-radius:2px;height:4px;margin-bottom:5px}
+  .qpbar{background:#9C7F67;height:4px;border-radius:2px}
+  .qpbar.int{background:#7a5a3a}
+  .qbot{display:flex;justify-content:space-between;align-items:center}
+  .qst{font-size:10px;color:#7a6a58}.qst.int{color:#BDA18A}
+  .qacts{display:flex;gap:4px}
+  .qbtn{font-size:10px;padding:2px 8px;border:none;border-radius:3px;cursor:pointer;font-family:inherit;font-weight:600}
+  .qbtn-r{background:#6a5a4a;color:#F5EFE6}.qbtn-d{background:#3d3630;color:#a09080}
+  .qbtn:hover{opacity:.85}
+  .q-empty{font-size:11px;color:#4a4238;text-align:center;padding:14px 0}
+
+  /* Historique */
+  .hist-item{padding:6px 0;border-bottom:1px solid #3d3630}
+  .ht{font-size:11px;color:#F5EFE6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .hm{font-size:10px;color:#6a5a4a;margin-top:2px}
+  .empty{font-size:11px;color:#4a4238;text-align:center;padding:20px 0}
+
+  /* About */
+  .ab{padding:0 14px 14px}
+  .ab-logo{width:64px;height:64px;background:#F5EFE6;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-size:42px;font-weight:700;color:#9C7F67;margin:16px auto 8px}
+  .ab-name{text-align:center;font-size:12px;letter-spacing:6px;color:#9C7F67;margin-bottom:4px}
+  .ab-desc{text-align:center;font-size:10px;color:#a09080;margin-bottom:10px}
+  .ab-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #3d3630;font-size:11px}
+  .ak{color:#a09080}.av{color:#F5EFE6;font-weight:600}.av.ac{color:#9C7F67}
+  .ab-gh{display:block;text-align:center;color:#9C7F67;font-size:11px;margin-top:10px;cursor:pointer}
+  .ab-lic{font-size:10px;color:#6a5a4a;text-align:center;margin-top:8px;line-height:1.5}
+
+  /* Set */
+  .set-lbl{font-size:10px;color:#a09080;margin:0 0 5px;font-weight:600}
+  .btn-save{display:block;width:100%;padding:8px;background:#9C7F67;color:#F5EFE6;border:none;border-radius:4px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;margin-top:10px}
+  .btn-save:hover{opacity:.88}
+  #set-msg{font-size:10px;color:#8a7a58;text-align:center;margin-top:6px;min-height:14px}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="logo">S</div>
+  <div>
+    <div class="hdr-title">SAMORY</div>
+    <div class="hdr-sub">Open Source Audio &amp; Video Downloader</div>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" data-tab="dl">⬇ Télécharger</div>
+  <div class="tab" data-tab="queue">📋 File</div>
+  <div class="tab" data-tab="hist">🕘 Historique</div>
+  <div class="tab" data-tab="set">⚙</div>
+  <div class="tab" data-tab="about">ℹ</div>
+</div>
+
+<!-- TÉLÉCHARGER -->
+<div class="panel active" id="tab-dl">
+  <div class="pad">
+    <div class="lbl">URL</div>
+    <input type="text" id="url" placeholder="Page courante ou colle une URL...">
+    <button class="btn b-mp3"  id="mp3">⬇  Audio MP3  (titre seul)</button>
+    <button class="btn b-mp4"  id="mp4">⬇  Vidéo MP4  (titre seul)</button>
+  </div>
+  <hr>
+  <div class="pad" style="padding-top:0">
+    <button class="btn b-pl3" id="pl_audio">⬇  Playlist MP3</button>
+    <button class="btn b-pl4" id="pl_video">⬇  Playlist MP4</button>
+  </div>
+
+  <!-- Contrôles pause/reprendre/stop -->
+  <div class="ctrl" id="ctrl">
+    <button class="cbtn cbtn-pause"  id="btn-pause">⏸ Pause</button>
+    <button class="cbtn cbtn-resume" id="btn-resume" disabled>▶ Reprendre</button>
+    <button class="cbtn cbtn-stop"   id="btn-stop">⏹ Arrêter</button>
+  </div>
+
+  <!-- Barre de progression -->
+  <div id="prog-wrap"><div id="prog-bg"><div id="prog-bar"></div></div></div>
+  <div id="status"></div>
+</div>
+
+<!-- FILE -->
+<div class="panel" id="tab-queue">
+  <div class="sec-hdr">
+    <span>File de téléchargements</span>
+    <button id="refresh-queue">↺ Actualiser</button>
+  </div>
+  <div class="scroll" id="queue-list"><div class="q-empty">Aucun téléchargement en file</div></div>
+</div>
+
+<!-- HISTORIQUE -->
+<div class="panel" id="tab-hist">
+  <div class="sec-hdr">
+    <span>Téléchargements récents</span>
+    <button id="clr-hist">🗑 Effacer</button>
+  </div>
+  <div class="scroll" id="hist-list"><div class="empty">Aucun téléchargement</div></div>
+</div>
+
+<!-- OPTIONS -->
+<div class="panel" id="tab-set">
+  <div class="pad">
+    <div class="set-lbl">Dossier de sortie</div>
+    <input type="text" id="out-dir" placeholder="C:\Users\...\Downloads\YT-DLP">
+    <button class="btn-save" id="save-dir">💾  Enregistrer</button>
+    <div id="set-msg"></div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<div class="panel" id="tab-about">
+  <div class="ab">
+    <div class="ab-logo">S</div>
+    <div class="ab-name">S &nbsp; A &nbsp; M &nbsp; O &nbsp; R &nbsp; Y</div>
+    <div class="ab-desc">Open Source Audio &amp; Video Downloader</div>
+    <div class="ab-row"><span class="ak">Version</span>    <span class="av">3.0.0</span></div>
+    <div class="ab-row"><span class="ak">Licence</span>    <span class="av ac">Apache 2.0 — Open Source</span></div>
+    <div class="ab-row"><span class="ak">Plateforme</span> <span class="av">Windows 10 / 11</span></div>
+    <div class="ab-row"><span class="ak">Créé par</span>   <span class="av ac">Hermann Kamté</span></div>
+    <div class="ab-row"><span class="ak">Origine</span>    <span class="av">Yaoundé, Cameroun</span></div>
+    <div class="ab-row"><span class="ak">Moteur DL</span>  <span class="av">yt-dlp (1000+ sites)</span></div>
+    <div class="ab-row"><span class="ak">Audio</span>      <span class="av">ffmpeg</span></div>
+    <span class="ab-gh" id="gh-link">github.com/hermannkamte</span>
+    <div class="ab-lic">Apache 2.0 — libre d'utilisation, modification et distribution.<br>Toute redistribution doit mentionner l'auteur original : Hermann Kamté.</div>
+  </div>
+</div>
+
+<script src="popup.js"></script>
+</body>
+</html>
