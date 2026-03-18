@@ -389,13 +389,21 @@ class App(tk.Tk):
         global LANG,C
         LANG=self.cfg.get("language","fr"); apply_palette(self.cfg.get("theme","auto"))
         self.title("Samory")
-        # Icône fenêtre
+        # Icône fenêtre + barre des tâches
         try:
             import sys
+            from PIL import Image as PILImage, ImageTk
             base = sys._MEIPASS if hasattr(sys,"_MEIPASS") else os.path.dirname(os.path.abspath(__file__))
-            ico = os.path.join(base,"samory.ico")
-            if os.path.exists(ico): self.iconbitmap(ico)
-        except: pass; self.geometry("530x660")
+            logo_path = os.path.join(base,"samory_logo.png")
+            ico_path  = os.path.join(base,"samory.ico")
+            if os.path.exists(logo_path):
+                pil = PILImage.open(logo_path).resize((256,256), PILImage.LANCZOS)
+                self._app_icon = ImageTk.PhotoImage(pil)
+                self.iconphoto(True, self._app_icon)
+            elif os.path.exists(ico_path):
+                self.iconbitmap(ico_path)
+        except: pass
+        self.geometry("530x660")
         self.resizable(False,True); self.configure(bg=C["bg"])
         self.jobs={}
         self.protocol("WM_DELETE_WINDOW",self._on_close)
