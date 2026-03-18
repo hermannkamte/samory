@@ -467,12 +467,13 @@ class App(tk.Tk):
         style.configure("TFrame",background=C["bg2"])
         self.nb=ttk.Notebook(self); self.nb.pack(fill="both",expand=True,padx=12,pady=10)
         self.tab_dl=ttk.Frame(self.nb); self.tab_hist=ttk.Frame(self.nb)
-        self.tab_set=ttk.Frame(self.nb)
+        self.tab_set=ttk.Frame(self.nb); self.tab_ext=ttk.Frame(self.nb)
         self.nb.add(self.tab_dl,text=s("tab_dl"))
         self.nb.add(self.tab_hist,text=s("tab_hist"))
         self.nb.add(self.tab_set,text=s("tab_set"))
+        self.nb.add(self.tab_ext,text="Extension")
         self.nb.bind("<<NotebookTabChanged>>",self._on_tab)
-        self._build_dl(); self._build_hist(); self._build_set()
+        self._build_dl(); self._build_hist(); self._build_set(); self._build_ext()
 
     def _rebuild(self):
         for w in self.winfo_children(): w.destroy()
@@ -638,7 +639,7 @@ class App(tk.Tk):
     def _show_about(self):
         win=tk.Toplevel(self)
         win.title(s("about_title"))
-        win.geometry("420x540")
+        win.geometry("420x620")
         win.resizable(False,False)
         win.configure(bg=C["bg2"])
         win.grab_set()
@@ -672,7 +673,7 @@ class App(tk.Tk):
 
         # Corps
         body=tk.Frame(win,bg=C["bg2"])
-        body.pack(fill="both",expand=True)
+        body.pack(fill="both",expand=False)
 
         def sep():
             tk.Frame(body,bg=C["bg4"],height=1).pack(fill="x",padx=24,pady=8)
@@ -720,7 +721,7 @@ class App(tk.Tk):
         sep()
 
         # Bouton installer l'extension Chrome
-        tk.Button(win,
+        tk.Button(body,
             text="Installer l'extension Chrome",
             bg=C["bg3"],fg=C["accent"],relief="flat",
             font=(FONT,10,"bold"),cursor="hand2",pady=8,
@@ -728,9 +729,53 @@ class App(tk.Tk):
                 "https://chrome.google.com/webstore/detail/samory/bjkcfmjlecjpihnopchgbdphjgfmheek")
         ).pack(fill="x",padx=24,pady=(0,6))
 
-        tk.Button(win,text="OK",bg=C["accent"],fg=C["bg"],relief="flat",
+        tk.Button(body,text="OK",bg=C["accent"],fg=C["bg"],relief="flat",
                   font=(FONT,10,"bold"),cursor="hand2",pady=8,
                   command=win.destroy).pack(fill="x",padx=24,pady=(0,16))
+
+
+    def _build_ext(self):
+        f=self.tab_ext
+        # Logo centré
+        logo=tk.Canvas(f,width=80,height=80,bg=C["bg2"],highlightthickness=0)
+        logo.pack(pady=(24,0))
+        logo.create_polygon(10,0,70,0,80,10,80,70,70,80,10,80,0,70,0,10,
+                            smooth=True,fill="#F5EFE6",outline="")
+        logo.create_text(40,44,text="S",fill="#9C7F67",
+                         font=("Georgia",46,"bold"),anchor="center")
+        tk.Label(f,text="Extension Chrome",bg=C["bg2"],fg=C["fg"],
+                 font=(FONT,11,"bold")).pack(pady=(10,2))
+        tk.Label(f,text="Téléchargez directement depuis votre navigateur",
+                 bg=C["bg2"],fg=C["fg2"],font=(FONT,9)).pack()
+        tk.Frame(f,bg=C["bg4"],height=1).pack(fill="x",padx=24,pady=14)
+        # Statut
+        tk.Label(f,text="Fonctionnalités de l'extension :",
+                 bg=C["bg2"],fg=C["fg2"],font=(FONT,9,"bold")).pack(anchor="w",padx=24)
+        features=[
+            "⬇  Audio MP3 / Vidéo MP4",
+            "⬇  Playlists complètes",
+            "📋  File synchronisée avec l'app",
+            "🕘  Historique partagé",
+            "⏸  Pause / Reprendre / Arrêter",
+            "🌍  1000+ sites supportés",
+        ]
+        for feat in features:
+            tk.Label(f,text=feat,bg=C["bg2"],fg=C["fg"],
+                     font=(FONT,9),anchor="w").pack(anchor="w",padx=32,pady=1)
+        tk.Frame(f,bg=C["bg4"],height=1).pack(fill="x",padx=24,pady=14)
+        # Bouton installer
+        tk.Button(f,text="⬇  Installer l'extension Chrome",
+                  bg=C["accent"],fg="#F5EFE6",relief="flat",
+                  font=(FONT,10,"bold"),cursor="hand2",pady=10,
+                  command=lambda:__import__("webbrowser").open(
+                      "https://chrome.google.com/webstore/detail/samory/bjkcfmjlecjpihnopchgbdphjgfmheek"
+                  )).pack(fill="x",padx=24,pady=(0,8))
+        # Lien GitHub
+        gh=tk.Label(f,text="Code source : github.com/hermannkamte/samory",
+                    bg=C["bg2"],fg=C["accent"],font=(FONT,8,"underline"),cursor="hand2")
+        gh.pack(pady=(0,8))
+        gh.bind("<Button-1>",lambda e:__import__("webbrowser").open(
+            "https://github.com/hermannkamte/samory"))
 
     def _on_tab(self,event):
         tab=self.nb.tab(self.nb.select(),"text")
