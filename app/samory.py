@@ -656,16 +656,24 @@ class App(tk.Tk):
         # Zone titre — logo exact SVG : fond #F5EFE6, S #9C7F67 Georgia
         hdr=tk.Frame(win,bg=C["bg"])
         hdr.pack(fill="x")
-        logo=tk.Canvas(hdr,width=96,height=96,bg=C["bg"],highlightthickness=0)
-        logo.pack(pady=(24,0))
-        # Fond carré arrondi
-        logo.create_polygon(
-            12,0, 84,0, 96,12, 96,84, 84,96, 12,96, 0,84, 0,12,
-            smooth=True, fill="#F5EFE6", outline=""
-        )
-        # S Georgia bold #9C7F67
-        logo.create_text(48,54,text="S",fill="#9C7F67",
-                         font=("Georgia",58,"bold"),anchor="center")
+        try:
+            import sys
+            base=sys._MEIPASS if hasattr(sys,"_MEIPASS") else os.path.dirname(os.path.abspath(__file__))
+            logo_path=os.path.join(base,"samory_logo.png")
+            if os.path.exists(logo_path):
+                from PIL import Image as PILImage, ImageTk
+                pil=PILImage.open(logo_path).resize((96,96),PILImage.LANCZOS)
+                _img=ImageTk.PhotoImage(pil)
+                lbl=tk.Label(hdr,image=_img,bg=C["bg"]); lbl.image=_img
+                lbl.pack(pady=(24,0))
+            else: raise FileNotFoundError
+        except:
+            logo=tk.Canvas(hdr,width=96,height=96,bg=C["bg"],highlightthickness=0)
+            logo.pack(pady=(24,0))
+            logo.create_polygon(12,0,84,0,96,12,96,84,84,96,12,96,0,84,0,12,
+                                smooth=True,fill="#F5EFE6",outline="")
+            logo.create_text(48,54,text="S",fill="#9C7F67",
+                             font=("Georgia",58,"bold"),anchor="center")
         tk.Label(hdr,text="S  A  M  O  R  Y",bg=C["bg"],fg="#9C7F67",
                  font=("Georgia",12)).pack(pady=(8,0))
         tk.Label(hdr,text="Open Source Audio & Video Downloader",
@@ -737,12 +745,24 @@ class App(tk.Tk):
     def _build_ext(self):
         f=self.tab_ext
         # Logo centré
-        logo=tk.Canvas(f,width=80,height=80,bg=C["bg2"],highlightthickness=0)
-        logo.pack(pady=(24,0))
-        logo.create_polygon(10,0,70,0,80,10,80,70,70,80,10,80,0,70,0,10,
-                            smooth=True,fill="#F5EFE6",outline="")
-        logo.create_text(40,44,text="S",fill="#9C7F67",
-                         font=("Georgia",46,"bold"),anchor="center")
+        try:
+            import sys
+            base=sys._MEIPASS if hasattr(sys,"_MEIPASS") else os.path.dirname(os.path.abspath(__file__))
+            logo_path=os.path.join(base,"samory_logo.png")
+            if os.path.exists(logo_path):
+                from PIL import Image as PILImage, ImageTk
+                pil=PILImage.open(logo_path).resize((80,80),PILImage.LANCZOS)
+                _img2=ImageTk.PhotoImage(pil)
+                lbl2=tk.Label(f,image=_img2,bg=C["bg2"]); lbl2.image=_img2
+                lbl2.pack(pady=(24,0))
+            else: raise FileNotFoundError
+        except:
+            logo=tk.Canvas(f,width=80,height=80,bg=C["bg2"],highlightthickness=0)
+            logo.pack(pady=(24,0))
+            logo.create_polygon(10,0,70,0,80,10,80,70,70,80,10,80,0,70,0,10,
+                                smooth=True,fill="#F5EFE6",outline="")
+            logo.create_text(40,44,text="S",fill="#9C7F67",
+                             font=("Georgia",46,"bold"),anchor="center")
         tk.Label(f,text="Extension Chrome",bg=C["bg2"],fg=C["fg"],
                  font=(FONT,11,"bold")).pack(pady=(10,2))
         tk.Label(f,text="Téléchargez directement depuis votre navigateur",
