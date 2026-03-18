@@ -719,6 +719,15 @@ class App(tk.Tk):
 
         sep()
 
+        # Bouton installer l'extension Chrome
+        tk.Button(win,
+            text="Installer l'extension Chrome",
+            bg=C["bg3"],fg=C["accent"],relief="flat",
+            font=(FONT,10,"bold"),cursor="hand2",pady=8,
+            command=lambda:__import__("webbrowser").open(
+                "https://chrome.google.com/webstore/detail/samory/bjkcfmjlecjpihnopchgbdphjgfmheek")
+        ).pack(fill="x",padx=24,pady=(0,6))
+
         tk.Button(win,text="OK",bg=C["accent"],fg=C["bg"],relief="flat",
                   font=(FONT,10,"bold"),cursor="hand2",pady=8,
                   command=win.destroy).pack(fill="x",padx=24,pady=(0,16))
